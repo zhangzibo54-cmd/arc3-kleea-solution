@@ -1,0 +1,3 @@
+[submodule "upstream/arc-agi-3-solution"]
+	path = upstream/arc-agi-3-solution
+	url = https://github.com/da-fr/arc-agi-3-solution

@@ -1,0 +1,23 @@
+arc3-kleea-solution
+Copyright 2026 zhangzibo54
+
+Our own code and documents are licensed under the Apache License, Version 2.0 (see LICENSE).
+This repository also contains or refers to third-party code, which keeps its own terms:
+
+- harness/ : The Duck harness and TAAF framework by Tufa Labs
+  (https://github.com/Tufalabs/duck-harness, commit 7652836). That repository carries no license file;
+  the code is included as distributed in Daniel Franzen's solution below, with our changes on top.
+  All rights in the original code remain with Tufa Labs; ask them before reusing it outside this context.
+
+- harness/ (Milestone-2 changes), upstream/arc-agi-3-solution/ : Daniel Franzen,
+  https://github.com/da-fr/arc-agi-3-solution, Apache-2.0. Our changes relative to it are in
+  patches/kleea-vs-franzen-m2.patch.
+
+- serving/nvfp4_kv/ : cookys, https://github.com/cookys/sglang-qsa-nvfp4-kv, Apache-2.0,
+  a modification of SGLang (Apache-2.0). See serving/nvfp4_kv/NOTICE.
+
+- serving/arc3_kvmix_patch.py, serving/lowm/, serving/klee/ : our patches to SGLang
+  (https://github.com/sgl-project/sglang, Apache-2.0) and model-assembly code.
+
+Model weights are not included. They come from klee100/Qwen3.8-Flash-Next-AutoRound-3bpw-MTP,
+Intel's W4A16 AutoRound checkpoint and Franzen's albucino MTP drafter, under their own licenses.

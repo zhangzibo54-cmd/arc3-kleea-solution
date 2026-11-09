@@ -1,0 +1,76 @@
+sglang-qsa-nvfp4-kv
+Copyright 2026 cookys
+
+This product includes software developed as a modification of SGLang
+(https://github.com/sgl-project/sglang), Copyright the SGLang team,
+licensed under the Apache License, Version 2.0.
+
+================================================================================
+Modified files (Apache-2.0 §4(b))
+================================================================================
+
+The patch in patches/qsa-nvfp4-kv.diff modifies these five files of SGLang at
+commit fb1216c6c, relative to python/sglang/srt/ :
+
+  layers/attention/qsa/sparse_attn.py
+  layers/attention/qwen_sparse_attn_backend.py
+  mem_cache/kv_cache_configurator.py
+  mem_cache/memory_pool.py
+  server_args.py
+
+and adds one new file:
+
+  layers/attention/qsa_nvfp4_kv.py
+
+SHA256 of all five files in their unmodified, pre-patch state is recorded in
+patches/EXPECTED-SHA256. No verbatim copy of any SGLang source file is
+redistributed here; the diff carries only the context lines needed to apply it.
+
+================================================================================
+Third-party attribution
+================================================================================
+
+The core approach implemented in layers/attention/qsa_nvfp4_kv.py -- two
+uint8 gather passes (packed FP4 data bytes, then per-block scale bytes) followed
+by dequantization of only the compacted rows, together with the PLAIN-only
+attention access rules and the host-scalar write-scale fix -- derives from the
+"dspark" patch in:
+
+  Olyno/Qwen3.8-Flash-Next-Dual-DGX-Sparks
+  https://github.com/Olyno/Qwen3.8-Flash-Next-Dual-DGX-Sparks
+  MiaAI Lab -- MIT License
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+The SM120 port of that patch, consulted while adapting it to this fork:
+
+  redashes1984/sglang-flashnext-nvfp4kv-sm120
+  https://github.com/redashes1984/sglang-flashnext-nvfp4kv-sm120
+
+Two correctness fixes carried by patches/qsa-nvfp4-kv.diff -- zero-filling the
+page-aligned strided scratch, and computing gather offsets in int64 -- reproduce
+findings from:
+
+  sgl-project/sglang PR #38851
+  https://github.com/sgl-project/sglang/pull/38851
+  "fix(qsa): make the paged sparse-decode gather memory-safe"
+  merged 2026-09-11, Apache-2.0
+
+That PR rewrote this same code path but added no FP4 branch, so it does not by
+itself enable an FP4 KV cache on the QSA path.
