@@ -8,7 +8,8 @@ The agent is **The Duck** (Tufa Labs) with **Daniel Franzen's Milestone-2 patch*
 by SGLang (Pennyroyal v2.5.3). Our work went mostly into **serving throughput** — more concurrent games and more tokens
 per game inside the 9-hour limit — plus a set of harness switches on top of Franzen's.
 
-> 中文简介：单人参赛，公开榜最好成绩 39.22（第 25 版笔记本）。在 Tufa Labs 的 Duck 和 Franzen 的 M2 方案上，主要做了
+> 中文简介：单人参赛，公开榜最好成绩 39.22（第 25 版笔记本）。Agent 只有一个 `python` 工具，在常驻的 Python 进程里写代码
+> 执行动作、分析画面和搜索，而不是从一组固定工具里逐个调用，模型自由度更高。在 Tufa Labs 的 Duck 和 Franzen 的 M2 方案上，主要做了
 > 推理加速（3/4 bit 混合专家量化、部分层 NVFP4 KV、20 路并发、若干 SGLang 内核补丁）和一些 harness 开关。
 > 实验记录和经验教训见 `experiments/`。
 
@@ -28,6 +29,15 @@ Online progression (public LB) as these landed — see `experiments/SUBMISSIONS.
 notes) → **39.22 (+ NVFP4 KV on layers 15–35, 20 streams)**.
 
 ### 2. Harness (on top of Franzen M2)
+**Execution model: one persistent Python process instead of a tool-call menu.** The agent has a single tool,
+`python`, which runs code in a long-lived process that holds the game (`action()`, frames, level history) and
+every function the model has written so far. Instead of choosing one action per tool call from a fixed set of
+tools, the model writes programs: it parses frames into objects, writes and reuses helpers (`grid_map`, world-model
+predictions), runs BFS/search over states, and plays whole action sequences in one call. This gives the model far
+more freedom than the usual tool-call paradigm and makes one model turn worth many game actions. The paradigm comes
+from The Duck; our switches build on it (persistent functions across trims, no-op limits, a 30 s per-call limit,
+history deltas of the process state).
+
 The submitted version turns on 34 of our own switches (full list with one-line descriptions: `docs/SWITCHES.md`).
 The ones we believe mattered most:
 - **Stuck-level notes** (`ARC3_LEVEL_TOKEN_NUDGE` 30K, `ARC3_LEVEL_NUDGE_CAUSES`): after 30K tokens on one level the
