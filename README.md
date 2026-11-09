@@ -51,7 +51,8 @@ of these effects are not individually significant (see `experiments/LESSONS.md`)
 | `patches/harness-changes.v25.patch` | The full harness diff the notebook ships (relative to the Duck base), decoded |
 | `serving/` | SGLang patches and model-assembly code embedded in the notebook, decoded into plain files |
 | `notebook/arc3-kleea-v25.ipynb` | The submitted notebook, byte for byte (version 25) |
-| `notebook/cells/` | Every code cell of that notebook as a `.py` file, with the base64 blobs replaced by pointers into `serving/` and `patches/` |
+| `notebook/arc3-kleea-readable.ipynb` | Same code and settings without base64 blobs: reads the files from the Kaggle dataset `zhangzibo54/arc3-kleea-solution-code` (= `serving/` + `patches/`, flattened). Built by `notebook/build_readable.py`; Kaggle `arc3-kleea-v25rerun` version 39 |
+| `notebook/cells/` | Every code cell of the readable notebook as a `.py` file |
 | `config/v25_settings.json` | All harness environment settings of the submitted run |
 | `docs/SWITCHES.md` | The switches the submission turns on, grouped, one line each |
 | `experiments/` | Online submissions, key offline runs, and lessons learned |

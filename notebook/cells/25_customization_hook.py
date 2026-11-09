@@ -10,7 +10,7 @@ bm.n_passes = 1
 HARD10 = ['g50t', 'cn04', 'lf52', 'tn36', 'bp35', 'sk48', 'wa30', 'sp80', 'su15', 'ls20']  # ar25 dropped (its low score was noise)
 DEMO10 = ['ar25', 'ft09', 'lp85', 'r11l', 're86', 'sb26', 'sc25', 'tr87', 'tu93', 'vc33']  # Franzen's original offline set
 OFFLINE_GAMES = DEMO10  # hard10 x 60 min, 140K context  # build_ista_notebook --games;  # KV admission test: all 25 games, at most 20 active
-OFFLINE_MINUTES = 5
+OFFLINE_MINUTES = 10
 bm.game_weights = None
 
 # KV-budget admission from the server's actual pool (max_total_num_tokens in serve.log): admit under 90%,

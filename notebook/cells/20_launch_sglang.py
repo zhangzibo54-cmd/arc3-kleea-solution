@@ -313,7 +313,7 @@ print("mm lazy image features:", "on" if os.environ.get("ARC3_MM_IMAGE_CACHE", "
 # ARC3_LOWM_GEMM / _HC_MIX / _HC_COMBINE_NORM: split-K BF16 GEMMs at 33-128 rows, two-launch HC mix, HC combine
 # fused with the next hc_norm (game/sglang_patches/arc3_lowm_patch.py, installed as the package arc3_lowm).
 import base64 as _b64lw
-_LOWM_FILES = json.loads(_b64lw.b64decode("<omitted: decoded copy under serving/>").decode())
+_LOWM_FILES = {n: code_file(n).decode() for n in ['lowm_splitk_gemm.py', 'hc_mix_2k.py', 'hc_combine_norm.py', 'patch.py']}
 _LOWM_ON = any(os.environ.get(_k, "0") == "1" for _k in ("ARC3_LOWM_GEMM", "ARC3_LOWM_HC_MIX", "ARC3_LOWM_HC_COMBINE_NORM"))
 _LOWM_HOOK = "\n# ARC3_LOWM_HOOK\ntry:\n    import arc3_lowm.patch as _arc3_lowm_patch\n    _arc3_lowm_patch.{fn}({cls})\nexcept ImportError:\n    pass\n"
 _site = sorted(Path(VENV).glob("lib/python*/site-packages"))
@@ -418,7 +418,7 @@ else:  # fp8 KV variant: the hooks the NVFP4 patch chain would install
 # ARC3_QSA_FP4_LAYERS: NVFP4 KV for the listed QSA full-attention layers, fp8 for the rest
 # (game/sglang_patches/arc3_kvmix_patch.py, installed as the package arc3_kvmix; needs the NVFP4 KV patch).
 import base64 as _b64km
-_KVMIX_SRC = _b64km.b64decode("<omitted: decoded copy under serving/>").decode()
+_KVMIX_SRC = code_file('arc3_kvmix_patch.py').decode()
 _KVMIX_ON = bool(os.environ.get("ARC3_QSA_FP4_LAYERS", "").strip())
 _KVCALIB_ON = bool(os.environ.get("ARC3_KV_CALIB_DIR", "").strip())  # fp8 calibration statistics
 _site = sorted(Path(VENV).glob("lib/python*/site-packages"))

@@ -22,7 +22,7 @@ _LM_ANY = r'(?:model\.)?(?:language_model\.)?(?:model\.)?layers\.'
 
 if KLEE:
     _assemble_path = _Path('/tmp/klee_assemble.py')
-    _assemble_path.write_bytes(_base64.b64decode("<omitted: decoded copy under serving/>"))
+    _assemble_path.write_bytes(code_file('assemble.py'))
     _sys.path.insert(0, '/tmp'); _sys.modules.pop('klee_assemble', None)
     from klee_assemble import assemble as _assemble
 
@@ -31,7 +31,7 @@ if KLEE:
         # hybrid A packed at serve time (bench/klee_model/pack_hybrid.py write_local): only the tensors the
         # hybrid uses are read from the full klee parts + Intel model, written to the local disk, then served
         # as the packed parts (KLEE_HYBRID False)
-        _Path('/tmp/klee_pack.py').write_bytes(_base64.b64decode("<omitted: decoded copy under serving/>"))
+        _Path('/tmp/klee_pack.py').write_bytes(code_file('pack_hybrid.py'))
         _sys.modules.pop('klee_pack', None)
         from klee_pack import write_local as _write_local
         _pack = _write_local(out='/tmp/kleea-pack/klee3bpw', threads=96)
@@ -44,7 +44,7 @@ if KLEE:
     KLEE_HYBRID = bool(V.get('KLEE_HYBRID', False))
     _hyb_rule = None
     if KLEE_HYBRID:
-        _Path('/tmp/klee_hybrid.py').write_bytes(_base64.b64decode("<omitted: decoded copy under serving/>"))
+        _Path('/tmp/klee_hybrid.py').write_bytes(code_file('hybrid.py'))
         _sys.modules.pop('klee_hybrid', None)
         from klee_hybrid import hybridize as _hybridize
         # HYBRID_SOURCE: 'intel' (Intel W4 g128 experts) or 'w3mid' (our W3 g128 MSE-clip experts, notebooks
